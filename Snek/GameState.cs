@@ -15,6 +15,7 @@ namespace Snek
         public int Score { get; private set; }
         public bool GameOver { get; private set; }
 
+        private readonly LinkedList<Direction> dirChanges = new LinkedList<Direction>(); //add variable for movement buffer to fix movement bug
 
         //  linked list containing positions currently occupied by snake (allows to add/delete from both ends of list), first element head, last element tail
         private readonly LinkedList<Position> snakePositions = new LinkedList<Position>();
@@ -124,11 +125,33 @@ namespace Snek
 
         }
 
+        private Direction GetLastDirection()
+        {
+            if (dirChanges.Count == 0) //if buffer empty return current direction
+            {
+                return Dir;
+            }
+            return dirChanges.Last.Value; //otherwise return most recently added direction change
+        }
+
+        private bool CanChangeDirection(Direction newDir)
+        {
+            if (dirChanges.Count == 2) //consider buffer full, max of 2
+            {
+                return false;
+            }
+            Direction lastDir = GetLastDirection(); //get the last predetermined direction
+            return newDir != lastDir && newDir != lastDir.Opposite(); //if new direction is not same as last direction AND they are not opposites, return true
+        }
+
         //public methods for gamestate
         public void ChangeDirection(Direction dir)
         {
-            //set direction property to the direction parameter
-            Dir = dir;
+            //check if change in direction can be made, if so add to buffer
+            if (CanChangeDirection(dir))
+            {
+                dirChanges.AddLast(dir);
+            }
         }
 
         //way to move the snake
@@ -165,6 +188,14 @@ namespace Snek
         //public move method, to move snake 1 step in current direction
         public void Move()
         {
+            //check if direciton change in buffer
+            if (dirChanges.Count > 0)
+            {
+                Dir = dirChanges.First.Value; //if so, change direction accordingly
+                dirChanges.RemoveFirst(); //remove from buffer
+            }
+
+
             //first get new head position
             Position newHeadPos = HeadPosition().Translate(Dir); //what does translate do
 
