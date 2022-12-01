@@ -33,6 +33,8 @@ namespace Snek
         private readonly int rows = 15, cols=15;
         private readonly Image[,] gridImages; //2d image array for image controls
         private GameState gameState; //gamestate object to initialize in constructor
+        private bool gameRunning; //false by default
+
 
  
 
@@ -46,10 +48,28 @@ namespace Snek
             gameState = new GameState(rows, cols);
         }
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private async Task RunGame()
         {
             Draw();
+            Overlay.Visibility = Visibility.Hidden;
             await GameLoop();
+        }
+ 
+
+        private async void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            //when user presses a key, window_previewkeydown is called and also window_keydown
+            if (Overlay.Visibility == Visibility.Visible)
+            {
+                e.Handled = true; //prevents window_keydown from being called while overlay visible
+            }
+
+            if (!gameRunning)
+            {
+                gameRunning = true;
+                await RunGame();
+                gameRunning = false;
+            }
         }
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
@@ -117,6 +137,8 @@ namespace Snek
             DrawGrid();
             ScoreText.Text = $"SCORE {gameState.Score}"; //updates score text
         }
+
+
 
         private void DrawGrid()
         {

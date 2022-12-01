@@ -12,7 +12,7 @@
         FontFamily="{StaticResource MainFont}"
         WindowStartupLocation="CenterScreen"
         Icon="Assets/icon.ico"
-        Loaded="Window_Loaded"
+        PreviewKeyDown="Window_PreviewKeyDown"
         KeyDown="Window_KeyDown">
     <Viewbox>
         <!-- pasting grid inside viewbox to fix window scaling-->
@@ -37,7 +37,8 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 RenderOptions.EdgeMode="Aliased"
-                Margin="20,0,20,20"> <!-- adding window margin-->
+                Margin="20,0,20,20">
+                <!-- adding window margin-->
                 <UniformGrid x:Name="GameGrid"
                          Width="400"
                          Height="400"
@@ -48,6 +49,25 @@
                 </UniformGrid>
 
             </Border>
+
+            <Border x:Name="Overlay"
+                Grid.Row="1"
+                Background="{StaticResource OverlayColor}"
+                Width="{Binding Path=ActualWidth, ElementName=GridBorder}"
+                Height="{Binding Path=ActualHeight, ElementName=GridBorder}"
+                Margin="{Binding Path=Margin, ElementName=GridBorder}"
+                RenderOptions.EdgeMode="Aliased">
+                <TextBlock x:Name="OverlayText"
+                           Text="Press Any Key to Start"
+                           FontSize="26"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           TextWrapping="Wrap"/>
+
+
+            </Border>
+            
+            
 
         </Grid>
     </Viewbox>
